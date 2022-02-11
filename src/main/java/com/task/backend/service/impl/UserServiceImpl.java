@@ -1,14 +1,5 @@
 package com.task.backend.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.task.backend.model.User;
-import com.task.backend.payload.request.LoginRequest;
-import com.task.backend.payload.request.SignupRequest;
-import com.task.backend.payload.response.JWTResponseToken;
-import com.task.backend.repository.UserRepository;
-import com.task.backend.security.jwt.AuthEntryPointJwt;
-import com.task.backend.security.jwt.JwtUtils;
-import com.task.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +11,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.task.backend.model.User;
+import com.task.backend.payload.request.LoginRequest;
+import com.task.backend.payload.request.SignupRequest;
+import com.task.backend.payload.response.JWTResponseToken;
+import com.task.backend.repository.UserRepository;
+import com.task.backend.security.jwt.JwtUtils;
+import com.task.backend.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -108,7 +105,8 @@ public class UserServiceImpl implements UserService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        @SuppressWarnings("unused")
+		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         String jwtToken = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
 

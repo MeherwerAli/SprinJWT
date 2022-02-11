@@ -16,6 +16,8 @@
 
     <properties>
         <java.version>1.8</java.version>
+    	<junit-5.version>5.7.0-M1</junit-5.version>
+		<surefire-version>2.22.0</surefire-version>
     </properties>
 
     <dependencies>
@@ -43,7 +45,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.11</version>
+            <version>1.11</version><!--$NO-MVN-MAN-VER$-->
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -71,28 +73,44 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+			<version>4.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.0</version>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit-5.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.4.0</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency> 
+			<groupId>org.mockito</groupId> 
+			<artifactId>mockito-core</artifactId> 
+			<version>4.1.0</version> 
+			<scope>test</scope> 
+		</dependency>
 
     </dependencies>
 
     <build>
         <plugins>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire-version}</version>
+				<dependencies>
+                    <dependency>
+                        <groupId>org.junit.vintage</groupId>
+                        <artifactId>junit-vintage-engine</artifactId>
+                        <version>5.6.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+                    <optimize>true</optimize>
+                </configuration>
             </plugin>
         </plugins>
     </build>

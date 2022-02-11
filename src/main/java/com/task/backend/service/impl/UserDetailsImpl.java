@@ -1,14 +1,13 @@
 package com.task.backend.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.task.backend.model.User;
+import java.util.Collection;
+import java.util.Objects;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.task.backend.model.User;
 
 public class UserDetailsImpl implements UserDetails {
   private static final long serialVersionUID = 1L;

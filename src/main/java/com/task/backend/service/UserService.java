@@ -1,6 +1,5 @@
 package com.task.backend.service;
 
-import com.task.backend.model.User;
 import com.task.backend.payload.request.LoginRequest;
 import com.task.backend.payload.request.SignupRequest;
 import com.task.backend.payload.response.JWTResponseToken;

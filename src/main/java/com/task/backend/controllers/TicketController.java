@@ -1,12 +1,8 @@
 package com.task.backend.controllers;
 
 
-import com.task.backend.model.Ticket;
-import com.task.backend.model.User;
-import com.task.backend.payload.response.TicketDTO;
-import com.task.backend.repository.TicketRepository;
-import com.task.backend.repository.UserRepository;
-import com.task.backend.service.TicketService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,9 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.task.backend.payload.response.TicketDTO;
+import com.task.backend.service.TicketService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
