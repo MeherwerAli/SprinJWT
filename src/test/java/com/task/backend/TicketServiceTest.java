@@ -2,6 +2,7 @@ package com.task.backend;
 
 import java.util.ArrayList;
 
+import com.task.backend.repository.TicketRepository;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
@@ -24,9 +25,11 @@ public class TicketServiceTest {
     public void getAllTicketsByPriorityTest() {
         try {
             ArrayList<TicketDTO> ticketDTOs = new ArrayList<>(ticketService.findAllByPriority());
-            Assertions.assertEquals(Priority.VERY_HIGH, Priority.valueOf(ticketDTOs.get(0).getPriority()));
+            if(ticketDTOs.size()>1)
+                Assertions.assertTrue(Priority.valueOf(ticketDTOs.get(0).getPriority()).value<=Priority.valueOf(ticketDTOs.get(1).getPriority()).value);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

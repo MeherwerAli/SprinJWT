@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -46,11 +47,11 @@ public class UserServiceTest {
     }
 
     @Test
-    public void UserSigninEmptyPasswordTest() throws Exception {
+    public void UserSigninEmptyPasswordTest() throws BadCredentialsException {
         try {
             LoginRequest loginRequest = new LoginRequest("TDtestUser", "");
             userService.signinUser(loginRequest);
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             String msg = e.getMessage();
             Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
         }
@@ -78,22 +79,22 @@ public class UserServiceTest {
     }
 
     @Test
-    public void wrongPasswordTest() {
+    public void wrongPasswordTest() throws BadCredentialsException{
         LoginRequest loginRequest = new LoginRequest("TDtestUser", "12345678");
         try {
             userService.signinUser(loginRequest);
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             String msg = e.getMessage();
             Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
         }
     }
 
     @Test
-    public void wrongUserNameTest() {
+    public void wrongUserNameTest() throws BadCredentialsException{
         LoginRequest loginRequest = new LoginRequest("username", "abcd123456");
         try {
             userService.signinUser(loginRequest);
-        } catch (Exception e) {
+        } catch (BadCredentialsException e) {
             String msg = e.getMessage();
             Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
         }
