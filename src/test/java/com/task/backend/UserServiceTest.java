@@ -40,6 +40,28 @@ public class UserServiceTest {
         JWTResponseToken response = userService.signinUser(loginRequest);
         Assertions.assertFalse(response.getJwtToken().isEmpty());
     }
+    
+    @Test
+    public void UserSigninEmptyPasswordTest() throws Exception {
+        try {
+        	LoginRequest loginRequest = new LoginRequest("TDtestUser", "");
+            userService.signinUser(loginRequest);
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
+        }
+    }
+    
+    @Test
+    public void UserSigninEmptyUsernameTest() throws Exception {
+        try {
+        	LoginRequest loginRequest = new LoginRequest("", "abcd123456");
+            userService.signinUser(loginRequest);
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
+        }
+    }
 
     @Test
     public void existingEmailTest(){
@@ -52,6 +74,16 @@ public class UserServiceTest {
     @Test
     public void wrongPasswordTest(){
         LoginRequest loginRequest = new LoginRequest("TDtestUser", "12345678");
+        try {
+            userService.signinUser(loginRequest);
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
+        }
+    }
+    @Test
+    public void wrongUserNameTest(){
+        LoginRequest loginRequest = new LoginRequest("username", "abcd123456");
         try {
             userService.signinUser(loginRequest);
         } catch (Exception e) {
