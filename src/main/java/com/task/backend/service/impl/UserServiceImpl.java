@@ -1,5 +1,10 @@
 package com.task.backend.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.task.backend.converter.UserConverter;
 import com.task.backend.model.User;
 import com.task.backend.payload.request.LoginRequest;
 import com.task.backend.payload.request.SignupRequest;
 import com.task.backend.payload.response.JWTResponseToken;
+import com.task.backend.payload.response.UserDTO;
 import com.task.backend.repository.UserRepository;
 import com.task.backend.security.jwt.JwtUtils;
 import com.task.backend.service.UserService;
@@ -112,4 +119,17 @@ public class UserServiceImpl implements UserService {
 
         return new JWTResponseToken(userDetails.getUsername(),jwtToken);
     }
+
+	@Override
+	public List<UserDTO> findAll() throws Exception{
+		List<UserDTO> userDTOs = new ArrayList<>();
+		try {
+			List<User> usersList = StreamSupport.stream(userRepository.findAll().spliterator(), false)
+            .collect(Collectors.toList());
+			userDTOs = UserConverter.toDTOList(new ArrayList<>(usersList));
+		}catch(Exception ex) {
+			
+		}
+		return userDTOs;
+	}
 }

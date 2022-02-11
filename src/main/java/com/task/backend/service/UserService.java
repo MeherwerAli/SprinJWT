@@ -1,8 +1,11 @@
 package com.task.backend.service;
 
+import java.util.List;
+
 import com.task.backend.payload.request.LoginRequest;
 import com.task.backend.payload.request.SignupRequest;
 import com.task.backend.payload.response.JWTResponseToken;
+import com.task.backend.payload.response.UserDTO;
 
 public interface UserService {
 
@@ -15,4 +18,6 @@ public interface UserService {
     JWTResponseToken signinUser(LoginRequest loginRequest) throws Exception;
 
     void removeUserByUserName(String userName) throws Exception;
+    
+    List<UserDTO> findAll() throws Exception;
 }

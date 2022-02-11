@@ -1,8 +1,10 @@
 package com.task.backend.converter;
 
+import com.task.backend.model.DeliveryDetails;
 import com.task.backend.model.Priority;
 import com.task.backend.model.Ticket;
 import com.task.backend.payload.response.TicketDTO;
+import com.task.backend.repository.DeliveryDetailsRepository;
 import com.task.backend.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,14 +13,15 @@ import java.util.ArrayList;
 public class TicketConverter {
 
     @Autowired
-    private static TicketRepository ticketRepository;
+    private static DeliveryDetailsRepository deliveryDetailsRepository;
 
     public static Ticket toDAO(TicketDTO ticketDTO){
         Ticket ticketDAO = new Ticket();
 
 
         ticketDAO.setId(ticketDTO.getId());
-        ticketDAO.setDeliveryDetails(ticketRepository.findById(ticketDTO.getDeliveryId()).get().getDeliveryDetails());
+        DeliveryDetails deliveryDetails = deliveryDetailsRepository.findById(ticketDTO.getDeliveryId()).get(); 
+        ticketDAO.setDeliveryDetails(deliveryDetails);
         ticketDAO.setName(ticketDTO.getName());
         ticketDAO.setPriority(Priority.valueOf(ticketDTO.getPriority()));
         return ticketDAO;
