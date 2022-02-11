@@ -1,20 +1,16 @@
 package com.task.backend.controllers;
 
 
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.task.backend.payload.request.LoginRequest;
 import com.task.backend.payload.request.SignupRequest;
-import com.task.backend.payload.response.MessageResponse;
+import com.task.backend.payload.response.JWTResponseToken;
 import com.task.backend.service.UserService;
+import com.task.backend.util.AppConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -24,22 +20,21 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> signInUser(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
-        ResponseEntity<?> response = ResponseEntity.ok()
+    @PostMapping("/auth/signin")
+    public ResponseEntity<JWTResponseToken> signInUser(@Valid @RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok()
                 .body(userService.signinUser(loginRequest));
-        return response;
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUpUser(@Valid @RequestBody SignupRequest signUpRequest) throws Exception {
+    @PostMapping("/auth/signup")
+    public ResponseEntity<JWTResponseToken> signUpUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
         if (userService.checkUserNameExist(signUpRequest.getUsername())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            return ResponseEntity.badRequest().body(new JWTResponseToken(null, null, AppConstants.USERNAME_ALREADY_TAKEN));
         }
 
         if (userService.checkEmailExist(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            return ResponseEntity.badRequest().body(new JWTResponseToken(null, null, AppConstants.EMAIL_ALREADY_IN_USE));
         }
 
         // Create new user's account
@@ -47,8 +42,8 @@ public class UserController {
     }
 
 
-    @PostMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestBody String userName) throws Exception {
+    @PutMapping("/delete")
+    public ResponseEntity<String> deleteUser(@RequestBody String userName) throws Exception {
         userService.removeUserByUserName(userName);
         return ResponseEntity.ok("user deleted!!!");
     }

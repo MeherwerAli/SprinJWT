@@ -3,23 +3,23 @@ package com.task.backend.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name="restaurant")
+@Table(name = "restaurant")
 public class Restaurant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="rating")
+    @Column(name = "rating")
     private Integer rating;
 
-    @Column(name="preparation_time")
+    @Column(name = "preparation_time")
     private String preparationTime;
 
-    @Column(name="mobile_number")
+    @Column(name = "mobile_number")
     private Integer mobileNumber;
 
     protected Restaurant() {

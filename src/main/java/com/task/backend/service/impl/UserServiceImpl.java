@@ -1,14 +1,20 @@
 package com.task.backend.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
+import com.task.backend.model.User;
+import com.task.backend.payload.request.LoginRequest;
+import com.task.backend.payload.request.SignupRequest;
+import com.task.backend.payload.response.JWTResponseToken;
+import com.task.backend.repository.UserRepository;
+import com.task.backend.security.jwt.JwtUtils;
+import com.task.backend.service.UserService;
+import com.task.backend.util.AppConstants;
+import javassist.NotFoundException;
+import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,32 +22,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.task.backend.converter.UserConverter;
-import com.task.backend.model.User;
-import com.task.backend.payload.request.LoginRequest;
-import com.task.backend.payload.request.SignupRequest;
-import com.task.backend.payload.response.JWTResponseToken;
-import com.task.backend.payload.response.UserDTO;
-import com.task.backend.repository.UserRepository;
-import com.task.backend.security.jwt.JwtUtils;
-import com.task.backend.service.UserService;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     UserRepository userRepository;
-
     @Autowired
     AuthenticationManager authenticationManager;
-
     @Autowired
     PasswordEncoder encoder;
-
     @Autowired
     JwtUtils jwtUtils;
-
-    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public Boolean checkUserNameExist(String userName) {
@@ -56,14 +50,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public JWTResponseToken signupUser(SignupRequest signUpRequest) throws Exception{
-        try{
-            if(signUpRequest.getPassword() == null)
-                return new JWTResponseToken(null, null, "Password cannot be empty");
-            else if(signUpRequest.getEmail() == null)
-                return new JWTResponseToken(null, null, "Email cannot be empty");
-            else if(signUpRequest.getUsername() == null)
-                return new JWTResponseToken(null, null, "User Name cannot be empty");
+    public JWTResponseToken signupUser(SignupRequest signUpRequest) throws ServiceException {
+        try {
+            if (signUpRequest.getPassword() == null)
+                return new JWTResponseToken(null, null, AppConstants.ERROR_EMPTY_PASSWORD);
+            else if (signUpRequest.getEmail() == null)
+                return new JWTResponseToken(null, null, AppConstants.ERROR_EMPTY_EMAIL);
+            else if (signUpRequest.getUsername() == null)
+                return new JWTResponseToken(null, null, AppConstants.ERROR_EMPTY_USERNAME);
             User user = new User(
                     signUpRequest.getFirstName(),
                     signUpRequest.getLastName(),
@@ -72,39 +66,41 @@ public class UserServiceImpl implements UserService {
                     encoder.encode(signUpRequest.getPassword()));
 
             user = userRepository.save(user);
-            JWTResponseToken response = AuthenticateUser(new LoginRequest(user.getUserName(), signUpRequest.getPassword()));
-            response.setMessage("Signup Successfull !!!");
+            JWTResponseToken response = authenticateUser(new LoginRequest(user.getUserName(), signUpRequest.getPassword()));
+            response.setMessage(AppConstants.MESSAGE_SIGNUP_SUCCESSFUL);
+            logger.info(AppConstants.MESSAGE_SIGNUP_SUCCESSFUL);
             return response;
-        }catch (Exception ex){
-            logger.error("Error:"+ ex.getMessage());
-            throw new Exception(ex);
+        } catch (ServiceException ex) {
+            throw new ServiceException(ex.getMessage());
         }
     }
 
     @Override
-    public JWTResponseToken signinUser(LoginRequest loginRequest) throws Exception{
-        try{
-            JWTResponseToken response = AuthenticateUser(loginRequest);
-            response.setMessage("Signin Successfull !!!");
+    public JWTResponseToken signinUser(LoginRequest loginRequest) throws AuthenticationCredentialsNotFoundException {
+        try {
+            JWTResponseToken response = authenticateUser(loginRequest);
+            response.setMessage(AppConstants.MESSAGE_SIGNIN_SUCCESSFUL);
+            logger.info(AppConstants.MESSAGE_SIGNIN_SUCCESSFUL);
             return response;
-        }catch (Exception ex){
-            logger.error("Error:"+ ex.getMessage());
-            throw new Exception(ex);
+        } catch (AuthenticationCredentialsNotFoundException ex) {
+            throw new AuthenticationCredentialsNotFoundException(ex.getMessage());
         }
     }
 
     @Override
-    public void removeUserByUserName(String userName) throws Exception{
-        try{
-            User user = userRepository.findByUserName(userName).get();
-            userRepository.delete(user);
-        }catch (Exception ex){
-            logger.error("Error:"+ ex.getMessage());
-            throw new Exception(ex);
+    public void removeUserByUserName(String userName) throws NotFoundException {
+        try {
+            Optional<User> optionalUser = userRepository.findByUserName(userName);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                userRepository.delete(user);
+            }
+        } catch (Exception ex) {
+            throw new NotFoundException(ex.getMessage());
         }
     }
 
-    public JWTResponseToken AuthenticateUser(LoginRequest loginRequest){
+    public JWTResponseToken authenticateUser(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -113,23 +109,10 @@ public class UserServiceImpl implements UserService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         @SuppressWarnings("unused")
-		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         String jwtToken = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
 
-        return new JWTResponseToken(userDetails.getUsername(),jwtToken);
+        return new JWTResponseToken(userDetails.getUsername(), jwtToken);
     }
-
-	@Override
-	public List<UserDTO> findAll() throws Exception{
-		List<UserDTO> userDTOs = new ArrayList<>();
-		try {
-			List<User> usersList = StreamSupport.stream(userRepository.findAll().spliterator(), false)
-            .collect(Collectors.toList());
-			userDTOs = UserConverter.toDTOList(new ArrayList<>(usersList));
-		}catch(Exception ex) {
-			
-		}
-		return userDTOs;
-	}
 }

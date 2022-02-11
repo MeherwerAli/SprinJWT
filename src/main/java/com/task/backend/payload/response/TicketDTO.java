@@ -1,7 +1,7 @@
 package com.task.backend.payload.response;
 
 
-import com.task.backend.model.Priority;
+import com.task.backend.model.enums.Priority;
 
 public class TicketDTO {
     private long id;

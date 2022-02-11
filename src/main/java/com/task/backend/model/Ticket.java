@@ -1,23 +1,25 @@
 package com.task.backend.model;
 
+import com.task.backend.model.enums.Priority;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name="ticket")
+@Table(name = "ticket")
 public class Ticket {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id", referencedColumnName = "delivery_id")
     private DeliveryDetails deliveryDetails;
 
-    @Column(name="priority")
+    @Column(name = "priority")
     private int priority;
 
     public Ticket() {

@@ -1,41 +1,48 @@
 package com.task.backend.model;
 
+import com.task.backend.model.enums.CustomerType;
+import com.task.backend.model.enums.DeliveryStatus;
+
+import javax.persistence.*;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 @Entity
-@Table(name="delivery_details")
+@Table(name = "delivery_details")
 public class DeliveryDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="delivery_id")
+    @Column(name = "delivery_id")
     private long id;
 
-    @Column(name="customer_type")
+    @Column(name = "customer_type")
     private CustomerType customerType;
 
-    @Column(name="delivery_status")
+    @Column(name = "delivery_status")
     private DeliveryStatus deliveryStatus;
 
-    @Column(name="expected_delivery_time")
+    @Column(name = "expected_delivery_time")
     private Date expectedDeliveryTime;
 
-    @Column(name="current_distance_from_destination_in_meters")
+    @Column(name = "current_distance_from_destination_in_meters")
     private Integer currentDistance;
 
-    @Column(name="time_to_reach_destination")
+    @Column(name = "time_to_reach_destination")
     private Date timeToReachDestination;
 
     @OneToOne(mappedBy = "deliveryDetails")
     private Ticket ticket;
+
+    protected DeliveryDetails() {
+    }
+
+    public DeliveryDetails(CustomerType customerType, DeliveryStatus deliveryStatus, Date expectedDeliveryTime, Integer currentDistance, Date timeToReachDestination) {
+        this.customerType = customerType;
+        this.deliveryStatus = deliveryStatus;
+        this.expectedDeliveryTime = expectedDeliveryTime;
+        this.currentDistance = currentDistance;
+        this.timeToReachDestination = timeToReachDestination;
+    }
 
     public long getId() {
         return id;
@@ -82,17 +89,6 @@ public class DeliveryDetails {
     }
 
     public void setTimeToReachDestination(Date timeToReachDestination) {
-        this.timeToReachDestination = timeToReachDestination;
-    }
-
-    protected DeliveryDetails() {
-    }
-
-    public DeliveryDetails(CustomerType customerType, DeliveryStatus deliveryStatus, Date expectedDeliveryTime, Integer currentDistance, Date timeToReachDestination) {
-        this.customerType = customerType;
-        this.deliveryStatus = deliveryStatus;
-        this.expectedDeliveryTime = expectedDeliveryTime;
-        this.currentDistance = currentDistance;
         this.timeToReachDestination = timeToReachDestination;
     }
 

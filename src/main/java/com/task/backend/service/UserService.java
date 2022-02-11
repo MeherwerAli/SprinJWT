@@ -1,11 +1,11 @@
 package com.task.backend.service;
 
-import java.util.List;
-
 import com.task.backend.payload.request.LoginRequest;
 import com.task.backend.payload.request.SignupRequest;
 import com.task.backend.payload.response.JWTResponseToken;
-import com.task.backend.payload.response.UserDTO;
+import javassist.NotFoundException;
+import org.hibernate.service.spi.ServiceException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 
 public interface UserService {
 
@@ -13,11 +13,10 @@ public interface UserService {
 
     Boolean checkEmailExist(String email);
 
-    JWTResponseToken signupUser(SignupRequest signUpRequest) throws Exception;
+    JWTResponseToken signupUser(SignupRequest signUpRequest) throws ServiceException;
 
-    JWTResponseToken signinUser(LoginRequest loginRequest) throws Exception;
+    JWTResponseToken signinUser(LoginRequest loginRequest) throws AuthenticationCredentialsNotFoundException;
 
-    void removeUserByUserName(String userName) throws Exception;
-    
-    List<UserDTO> findAll() throws Exception;
+    void removeUserByUserName(String userName) throws ServiceException, NotFoundException;
+
 }

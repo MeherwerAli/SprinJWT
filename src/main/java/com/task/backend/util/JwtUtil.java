@@ -5,28 +5,25 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.WebUtils;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import javax.servlet.http.Cookie;
-
-import org.springframework.http.ResponseCookie;
-import org.springframework.web.util.WebUtils;
 
 @Service
-public class JwtUtil  implements Serializable {
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
-    private static final long serialVersionUID = -2550185165626007488L;
+public class JwtUtil implements Serializable {
 
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
+    private static final long serialVersionUID = -2550185165626007488L;
     @Value(("${jwt.expiration}"))
     private int expiration;
 
@@ -45,11 +42,13 @@ public class JwtUtil  implements Serializable {
             return null;
         }
     }
+
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();
         return cookie;
     }
+
     public ResponseCookie getCleanJwtCookie() {
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
         return cookie;
@@ -58,6 +57,7 @@ public class JwtUtil  implements Serializable {
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
+
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
@@ -99,6 +99,7 @@ public class JwtUtil  implements Serializable {
         final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
+
     //for retrieveing any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();

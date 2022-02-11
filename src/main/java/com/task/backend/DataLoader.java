@@ -1,6 +1,10 @@
 package com.task.backend;
 
-import com.task.backend.model.*;
+import com.task.backend.model.DeliveryDetails;
+import com.task.backend.model.Ticket;
+import com.task.backend.model.enums.CustomerType;
+import com.task.backend.model.enums.DeliveryStatus;
+import com.task.backend.model.enums.Priority;
 import com.task.backend.repository.DeliveryDetailsRepository;
 import com.task.backend.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +37,19 @@ public class DataLoader implements CommandLineRunner {
             Date afterAdding30Mins = new Date(timeInSecs + (30 * 60 * 1000));
             Date afterAdding35Mins = new Date(timeInSecs + (35 * 60 * 1000));
 
-            DeliveryDetails deliveryDetails = new DeliveryDetails(CustomerType.LOYAL, DeliveryStatus.Order_Preparing, afterAdding30Mins, 30, afterAdding35Mins);
+            DeliveryDetails deliveryDetails = new DeliveryDetails(CustomerType.LOYAL, DeliveryStatus.ORDER_PREPAIRING, afterAdding30Mins, 30, afterAdding35Mins);
             deliveryDetails = deliveryDetailsRepository.save(deliveryDetails);
 
             Ticket ticket = new Ticket("testTicket", deliveryDetails, Priority.HIGH);
             ticketRepository.save(ticket);
 
-            DeliveryDetails deliveryDetails1 = new DeliveryDetails(CustomerType.VIP, DeliveryStatus.Order_Preparing, afterAdding30Mins, 30, afterAdding35Mins);
+            DeliveryDetails deliveryDetails1 = new DeliveryDetails(CustomerType.VIP, DeliveryStatus.ORDER_PREPAIRING, afterAdding30Mins, 30, afterAdding35Mins);
             deliveryDetails1 = deliveryDetailsRepository.save(deliveryDetails1);
 
             Ticket ticket1 = new Ticket("testTicket2", deliveryDetails1, Priority.VERY_HIGH);
             ticketRepository.save(ticket1);
 
-            DeliveryDetails deliveryDetails2 = new DeliveryDetails(CustomerType.NEW, DeliveryStatus.Order_Preparing, afterAdding30Mins, 30, afterAdding35Mins);
+            DeliveryDetails deliveryDetails2 = new DeliveryDetails(CustomerType.NEW, DeliveryStatus.ORDER_PICKEDUP, afterAdding30Mins, 30, afterAdding35Mins);
             deliveryDetails2 = deliveryDetailsRepository.save(deliveryDetails2);
 
             Ticket ticket2 = new Ticket("testTicket3", deliveryDetails2, Priority.MODERATE);

@@ -1,10 +1,11 @@
 Apis can be found in this folder as BackendApis
 
+JUnit Tests:
+Run JUnit test with JUNIT4 to run all the tests.
+
 Docker deployment:
-
-SpringRun:
+cd target
 docker build -t backendtask1.0 .
-
-Run on cmd:
+cd ..
 
 docker-compose up

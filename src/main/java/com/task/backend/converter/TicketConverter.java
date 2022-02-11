@@ -1,32 +1,40 @@
 package com.task.backend.converter;
 
 import com.task.backend.model.DeliveryDetails;
-import com.task.backend.model.Priority;
+import com.task.backend.model.enums.Priority;
 import com.task.backend.model.Ticket;
 import com.task.backend.payload.response.TicketDTO;
 import com.task.backend.repository.DeliveryDetailsRepository;
-import com.task.backend.repository.TicketRepository;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TicketConverter {
 
     @Autowired
     private static DeliveryDetailsRepository deliveryDetailsRepository;
+    private TicketConverter() {
+        throw new IllegalStateException("TicketConverter class");
+    }
 
-    public static Ticket toDAO(TicketDTO ticketDTO){
+    public static Ticket toDAO(TicketDTO ticketDTO) throws NotFoundException {
         Ticket ticketDAO = new Ticket();
 
 
         ticketDAO.setId(ticketDTO.getId());
-        DeliveryDetails deliveryDetails = deliveryDetailsRepository.findById(ticketDTO.getDeliveryId()).get(); 
-        ticketDAO.setDeliveryDetails(deliveryDetails);
+        DeliveryDetails deliveryDetails = null;
+        if(deliveryDetailsRepository.findById(ticketDTO.getDeliveryId()).isPresent()){
+            deliveryDetails = deliveryDetailsRepository.findById(ticketDTO.getDeliveryId()).get();
+            ticketDAO.setDeliveryDetails(deliveryDetails);
+        }
         ticketDAO.setName(ticketDTO.getName());
         ticketDAO.setPriority(Priority.valueOf(ticketDTO.getPriority()));
         return ticketDAO;
     }
-    public static TicketDTO toDTO(Ticket ticketEntity){
+
+    public static TicketDTO toDTO(Ticket ticketEntity) {
         TicketDTO ticketDTO = new TicketDTO();
         ticketDTO.setId(ticketEntity.getId());
         Long deliveryDetailsId = ticketEntity.getDeliveryDetails().getId();
@@ -37,17 +45,23 @@ public class TicketConverter {
         return ticketDTO;
     }
 
-    public static ArrayList<Ticket> ticketDAOList(ArrayList<TicketDTO> ticketDTOs){
-        ArrayList<Ticket> ticketDAOs = new ArrayList<Ticket>();
+    public static List<Ticket> ticketDAOList(List<TicketDTO> ticketDTOs) {
+        List<Ticket> ticketDAOs = new ArrayList<>();
         ticketDTOs.forEach(
-                dto -> ticketDAOs.add(toDAO(dto)
-                )
+                dto -> {
+                    try {
+                        ticketDAOs.add(toDAO(dto)
+                        );
+                    } catch (NotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
         );
         return ticketDAOs;
     }
 
-    public static ArrayList<TicketDTO> ticketDTOList(ArrayList<Ticket> ticketDAOs){
-        ArrayList<TicketDTO> ticketDTOs = new ArrayList<TicketDTO>();
+    public static List<TicketDTO> ticketDTOList(List<Ticket> ticketDAOs) {
+        List<TicketDTO> ticketDTOs = new ArrayList<>();
         ticketDAOs.forEach(
                 dao -> ticketDTOs.add(toDTO(dao)
                 )

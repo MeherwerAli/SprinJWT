@@ -1,4 +1,4 @@
-package com.task.backend.model;
+package com.task.backend.model.enums;
 
 public enum CustomerType {
     VIP,

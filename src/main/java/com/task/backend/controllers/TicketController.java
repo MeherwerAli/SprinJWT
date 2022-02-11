@@ -3,6 +3,7 @@ package com.task.backend.controllers;
 
 import java.util.List;
 
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,14 +22,8 @@ public class TicketController {
     @Autowired
     TicketService ticketService;
 
-    @GetMapping("/all")
-    public ResponseEntity<?> findAll() throws Exception {
-        List<TicketDTO> ticketDTOs = ticketService.findAll();
-        return ResponseEntity.ok()
-                .body(ticketDTOs);
-    }
     @GetMapping("/all_by_priority")
-    public ResponseEntity<?> findTicketsByPriority() throws Exception {
+    public ResponseEntity<List<TicketDTO>> findTicketsByPriority() throws NotFoundException {
         List<TicketDTO> ticketDTOs = ticketService.findAllByPriority();
         return ResponseEntity.ok()
                 .body(ticketDTOs);

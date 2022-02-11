@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.task.backend.model.Priority;
+import com.task.backend.model.enums.Priority;
 import com.task.backend.payload.response.TicketDTO;
 import com.task.backend.service.TicketService;
 
-@RunWith(SpringRunner.class )
+@RunWith(SpringRunner.class)
 @SpringBootTest
 public class TicketServiceTest {
 
@@ -21,7 +21,7 @@ public class TicketServiceTest {
     TicketService ticketService;
 
     @Test
-    public void getAllTicketsByPriorityTest(){
+    public void getAllTicketsByPriorityTest() {
         try {
             ArrayList<TicketDTO> ticketDTOs = new ArrayList<>(ticketService.findAllByPriority());
             Assertions.assertEquals(Priority.VERY_HIGH, Priority.valueOf(ticketDTOs.get(0).getPriority()));

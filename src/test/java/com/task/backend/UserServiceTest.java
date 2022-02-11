@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.task.backend.payload.request.LoginRequest;
@@ -15,7 +16,9 @@ import com.task.backend.payload.request.SignupRequest;
 import com.task.backend.payload.response.JWTResponseToken;
 import com.task.backend.service.UserService;
 
-@RunWith(SpringRunner.class )
+import java.util.Locale;
+
+@RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserServiceTest {
 
@@ -34,61 +37,65 @@ public class UserServiceTest {
         Assertions.assertFalse(response.getJwtToken().isEmpty());
 
     }
+
     @Test
     public void UserSigninTest() throws Exception {
         LoginRequest loginRequest = new LoginRequest("TDtestUser", "abcd123456");
         JWTResponseToken response = userService.signinUser(loginRequest);
         Assertions.assertFalse(response.getJwtToken().isEmpty());
     }
-    
+
     @Test
     public void UserSigninEmptyPasswordTest() throws Exception {
         try {
-        	LoginRequest loginRequest = new LoginRequest("TDtestUser", "");
+            LoginRequest loginRequest = new LoginRequest("TDtestUser", "");
             userService.signinUser(loginRequest);
         } catch (Exception e) {
             String msg = e.getMessage();
-            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
-        }
-    }
-    
-    @Test
-    public void UserSigninEmptyUsernameTest() throws Exception {
-        try {
-        	LoginRequest loginRequest = new LoginRequest("", "abcd123456");
-            userService.signinUser(loginRequest);
-        } catch (Exception e) {
-            String msg = e.getMessage();
-            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
+            Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
         }
     }
 
     @Test
-    public void existingEmailTest(){
+    public void UserSigninEmptyUsernameTest() throws UsernameNotFoundException {
+        try {
+            LoginRequest loginRequest = new LoginRequest("", "abcd123456");
+            userService.signinUser(loginRequest);
+        } catch (Exception e) {
+            String msg = e.getMessage();
+            Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
+        }
+    }
+
+    @Test
+    public void existingEmailTest() {
         Assertions.assertTrue(userService.checkEmailExist("testUser@gmail.com"));
     }
+
     @Test
-    public void existingUserNameTest(){
+    public void existingUserNameTest() {
         Assertions.assertTrue(userService.checkUserNameExist("TDtestUser"));
     }
+
     @Test
-    public void wrongPasswordTest(){
+    public void wrongPasswordTest() {
         LoginRequest loginRequest = new LoginRequest("TDtestUser", "12345678");
         try {
             userService.signinUser(loginRequest);
         } catch (Exception e) {
             String msg = e.getMessage();
-            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
+            Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
         }
     }
+
     @Test
-    public void wrongUserNameTest(){
+    public void wrongUserNameTest() {
         LoginRequest loginRequest = new LoginRequest("username", "abcd123456");
         try {
             userService.signinUser(loginRequest);
         } catch (Exception e) {
             String msg = e.getMessage();
-            Assertions.assertTrue(msg.matches("(.*)BadCredentials(.*)"));
+            Assertions.assertTrue(msg.toLowerCase(Locale.ROOT).matches("(.*)bad credentials(.*)"));
         }
     }
 

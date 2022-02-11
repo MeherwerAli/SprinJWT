@@ -12,18 +12,17 @@ import com.task.backend.repository.TicketRepository;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class TicketRepositoryTest {
-	
+
     @Autowired
     private TicketRepository ticketRepository;
-    
-    
+
+
     @Test
     public void findAllByPriority() {
-    	
-    	Assertions.assertTrue(ticketRepository.findAllByOrderByPriorityAsc().size()>0);
-    	
+
+        Assertions.assertTrue(ticketRepository.findAllByOrderByPriorityAsc().size() > 0);
+
     }
-    
-    
+
 
 }
